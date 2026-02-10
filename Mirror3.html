@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ENERGY CORE – MIRROR WAR (White × Blue)</title>
+  <style>
+    :root{
+      --bg:#f6f9ff;
+      --panel:#ffffff;
+      --panel2:#f2f7ff;
+      --blue:#1e63ff;
+      --blue2:#3a7bff;
+      --text:#0b1220;
+      --muted:#4a5a78;
+      --line:rgba(30,99,255,.25);
+      --line2:rgba(30,99,255,.14);
+      --good:#16b34a;
+      --bad:#e11d48;
+      --shadow: 0 18px 50px rgba(13,28,64,.14);
+      --glow: 0 0 18px rgba(30,99,255,.35), 0 0 48px rgba(30,99,255,.18);
+      --glowStrong: 0 0 22px rgba(30,99,255,.55), 0 0 70px rgba(30,99,255,.22);
+      --radius2: 24px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans Thai", "Noto Sans", Arial, sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--font);
+      background:
+        radial-gradient(1000px 700px at 20% 10%, rgba(30,99,255,.10), transparent 60%),
+        radial-gradient(900px 650px at 85% 15%, rgba(30,99,255,.08), transparent 55%),
+        radial-gradient(1100px 850px at 50% 110%, rgba(30,99,255,.08), transparent 60%),
+        linear-gradient(180deg, #f6f9ff 0%, #ffffff 55%, #f2f7ff 100%);
+      color:var(--text);
+      overflow:hidden;
+    }
+
+    /* ✅ ไม่มีคลื่น/ลายไหลๆ */
+    .energy-bg{
+      position:fixed; inset:0;
+      pointer-events:none;
+      opacity:.9;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(30,99,255,.08), transparent 55%),
+        radial-gradient(circle at 80% 15%, rgba(30,99,255,.06), transparent 55%);
+      mix-blend-mode: multiply;
+    }
+    .energy-streak{ display:none !important; } /* ปิดเลย */
+
+    .app{
+      position:relative;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: clamp(10px, 2vw, 24px);
+    }
+
+    .shell{
+      width:min(1200px, 100%);
+      height:min(820px, 100%);
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:14px 16px;
+      background: linear-gradient(180deg, rgba(30,99,255,.10), rgba(255,255,255,.0));
+      border:1px solid var(--line2);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+
+    .brand{display:flex; flex-direction:column; line-height:1.05; gap:4px;}
+    .brand .title{
+      font-weight:1000; letter-spacing:.8px;
+      font-size: clamp(16px, 2.2vw, 22px);
+      text-transform: uppercase;
+      text-shadow: var(--glow);
+      color:#0b1220;
+    }
+    .brand .subtitle{
+      color:var(--muted);
+      font-weight:900;
+      font-size: clamp(12px, 1.6vw, 14px);
+      letter-spacing:.2px;
+    }
+
+    .hud{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;}
+    .hudbox{
+      background: rgba(255,255,255,.92);
+      border:1px solid var(--line2);
+      border-radius: 14px;
+      padding:10px 12px;
+      min-width: 140px;
+      box-shadow: 0 10px 26px rgba(13,28,64,.10);
+    }
+    .hudbox .k{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:1000;
+      letter-spacing:.3px;
+      text-transform: uppercase;
+    }
+    .hudbox .v{
+      margin-top:4px;
+      font-size:16px;
+      font-weight:1000;
+      letter-spacing:.2px;
+      text-shadow: var(--glow);
+      white-space:nowrap;
+      color:#0b1220;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 12px; border-radius: 14px;
+      border:1px solid var(--line2);
+      background: rgba(30,99,255,.08);
+      box-shadow: 0 12px 26px rgba(13,28,64,.10);
+      font-weight:1000;
+      letter-spacing:.2px;
+      white-space:nowrap;
+      color:#0b1220;
+    }
+    .badge .dot{
+      width:10px; height:10px; border-radius:50%;
+      background: var(--blue);
+      box-shadow: var(--glowStrong);
+    }
+
+    .content{
+      flex:1;
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:14px;
+      min-height:0;
+    }
+    @media (max-width: 980px){
+      body{overflow:auto}
+      .content{grid-template-columns: 1fr;}
+      .shell{height:auto}
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(30,99,255,.05), rgba(255,255,255,.0));
+      border:1px solid var(--line2);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      min-height:0;
+    }
+    .card-inner{
+      padding:16px;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      min-height:0;
+    }
+
+    .section-title{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      border-bottom:1px solid rgba(30,99,255,.12);
+      padding-bottom:10px;
+    }
+    .section-title h2{
+      margin:0;
+      font-size: clamp(14px, 2vw, 18px);
+      letter-spacing:.3px;
+      text-transform: uppercase;
+      font-weight:1000;
+      text-shadow: var(--glow);
+      color:#0b1220;
+    }
+    .small{color:var(--muted); font-weight:900; font-size:12px;}
+
+    .qbox{
+      background: rgba(255,255,255,.86);
+      border:1px solid rgba(30,99,255,.20);
+      border-radius: 18px;
+      padding:14px 14px;
+      box-shadow: 0 12px 26px rgba(13,28,64,.08);
+    }
+    .qline{
+      display:flex; flex-wrap:wrap;
+      align-items:center; gap:10px;
+      font-weight:1000;
+      font-size: clamp(14px, 2.2vw, 18px);
+      color:#0b1220;
+    }
+    .pill{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:8px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(30,99,255,.28);
+      background: rgba(30,99,255,.08);
+      box-shadow: 0 0 18px rgba(30,99,255,.14);
+      min-width: 90px;
+      color:#0b1220;
+    }
+    .pill strong{ text-shadow: var(--glow); letter-spacing:.2px; }
+
+    .timer{
+      margin-top:12px;
+      height:10px;
+      border-radius: 999px;
+      background: rgba(11,18,32,.06);
+      border:1px solid rgba(30,99,255,.18);
+      overflow:hidden;
+    }
+    .timer > div{
+      height:100%;
+      width:100%;
+      background: linear-gradient(90deg, rgba(30,99,255,.95), rgba(30,99,255,.35));
+      box-shadow: var(--glow);
+      transform-origin:left center;
+      transform: scaleX(1);
+    }
+    .timer-label{
+      display:flex; justify-content:space-between;
+      margin-top:8px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:1000;
+      letter-spacing:.2px;
+    }
+
+    .slots{display:grid; grid-template-columns: 1fr; gap:10px; min-height:0;}
+    .slot{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:12px 12px;
+      border-radius: 16px;
+      border:1px solid rgba(30,99,255,.22);
+      background: rgba(255,255,255,.86);
+      cursor:pointer;
+      user-select:none;
+      box-shadow: 0 10px 22px rgba(13,28,64,.06);
+      transition: border-color .15s ease, box-shadow .15s ease, transform .08s ease;
+    }
+    .slot:hover{
+      border-color: rgba(30,99,255,.40);
+      box-shadow: 0 0 0 3px rgba(30,99,255,.10), 0 12px 26px rgba(13,28,64,.08);
+    }
+    .slot.active{
+      border-color: rgba(30,99,255,.65);
+      box-shadow: 0 0 0 4px rgba(30,99,255,.16), var(--glow);
+      transform: translateY(-1px);
+    }
+    .slot .label{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:1000;
+      text-transform: uppercase;
+      letter-spacing:.4px;
+      white-space:nowrap;
+    }
+    .slot .value{
+      flex:1;
+      text-align:right;
+      font-weight:1000;
+      font-size: clamp(14px, 2vw, 18px);
+      text-shadow: var(--glow);
+      color:#0b1220;
+    }
+    .slot .value.empty{color: rgba(11,18,32,.35); text-shadow:none;}
+    .mark{
+      width:34px; height:34px; border-radius:999px;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:1000;
+      margin-left:8px;
+      border:1px solid rgba(11,18,32,.10);
+      background: rgba(11,18,32,.04);
+      color: rgba(11,18,32,.35);
+      flex:0 0 auto;
+    }
+    .slot.correct{border-color: rgba(22,179,74,.40); box-shadow: 0 0 0 3px rgba(22,179,74,.12), 0 12px 26px rgba(13,28,64,.08);}
+    .slot.correct .mark{border-color: rgba(22,179,74,.38); background: rgba(22,179,74,.12); color: var(--good);}
+    .slot.wrong{border-color: rgba(225,29,72,.40); box-shadow: 0 0 0 3px rgba(225,29,72,.10), 0 12px 26px rgba(13,28,64,.08);}
+    .slot.wrong .mark{border-color: rgba(225,29,72,.36); background: rgba(225,29,72,.10); color: var(--bad);}
+
+    .bank{display:flex; flex-direction:column; gap:10px; min-height:0;}
+    .bank-grid{
+      display:flex; flex-wrap:wrap; gap:10px;
+      align-content:flex-start;
+      overflow:auto;
+      padding-right:6px;
+      max-height:100%;
+    }
+    .token{
+      border:1px solid rgba(30,99,255,.22);
+      background: rgba(30,99,255,.08);
+      color:#0b1220;
+      border-radius:999px;
+      padding:10px 12px;
+      font-weight:1000;
+      letter-spacing:.2px;
+      cursor:pointer;
+      user-select:none;
+      box-shadow: 0 10px 18px rgba(13,28,64,.10);
+      transition: transform .08s ease, box-shadow .15s ease, border-color .15s ease, opacity .15s ease;
+      white-space:nowrap;
+    }
+    .token:hover{transform: translateY(-1px); border-color: rgba(30,99,255,.46); box-shadow: 0 0 0 3px rgba(30,99,255,.12), 0 12px 22px rgba(13,28,64,.12);}
+    .token.disabled{opacity:.25; pointer-events:none;}
+
+    .actions{
+      display:flex; gap:10px; flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:auto;
+    }
+    .btn{
+      appearance:none; border:none; cursor:pointer;
+      font-weight:1000; letter-spacing:.3px;
+      padding:12px 14px;
+      border-radius: 16px;
+      background: rgba(30,99,255,.08);
+      border:1px solid rgba(30,99,255,.22);
+      color:#0b1220;
+      box-shadow: 0 14px 26px rgba(13,28,64,.10);
+      transition: transform .08s ease, box-shadow .15s ease, border-color .15s ease, opacity .15s ease;
+      display:inline-flex; align-items:center; gap:10px;
+      user-select:none;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(30,99,255,.45); box-shadow: 0 0 0 4px rgba(30,99,255,.12), 0 16px 28px rgba(13,28,64,.12);}
+    .btn:active{transform: translateY(0px) scale(.99)}
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(30,99,255,.35), rgba(30,99,255,.10));
+      border-color: rgba(30,99,255,.60);
+      text-shadow: var(--glow);
+      position:relative; overflow:hidden;
+    }
+    .btn.primary::before{
+      content:"";
+      position:absolute;
+      inset:-60%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.45) 30%, transparent 60%);
+      transform: translateX(-40%) rotate(10deg);
+      animation: shine 1.8s ease-in-out infinite;
+      opacity:.75;
+      pointer-events:none;
+    }
+    @keyframes shine{
+      0%{transform: translateX(-70%) rotate(10deg); opacity:.0}
+      20%{opacity:.9}
+      55%{opacity:.15}
+      100%{transform: translateX(70%) rotate(10deg); opacity:0}
+    }
+    .btn.ghost{background: rgba(11,18,32,.05); border-color: rgba(11,18,32,.10);}
+    .btn.danger{background: rgba(225,29,72,.08); border-color: rgba(225,29,72,.22);}
+    .btn.disabled{opacity:.35; pointer-events:none;}
+
+    .screen{
+      position:fixed; inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: clamp(12px, 3vw, 28px);
+      z-index:50;
+    }
+    .screen.show{display:flex}
+    .modal{
+      width:min(980px, 100%);
+      max-height: min(92vh, 900px);
+      overflow:auto;
+      border-radius: 26px;
+      border:1px solid rgba(30,99,255,.18);
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 30px 90px rgba(13,28,64,.18);
+      padding: 18px;
+      backdrop-filter: blur(8px);
+    }
+    .modal h1{
+      margin:6px 0 4px;
+      font-size: clamp(22px, 3.2vw, 34px);
+      font-weight:1000;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-shadow: var(--glowStrong);
+      color:#0b1220;
+    }
+    .modal .sub{color: var(--muted); font-weight:900; margin-bottom:14px; line-height:1.35;}
+
+    .legend{
+      margin: 14px 0 12px;
+      padding: 14px;
+      border-radius: 18px;
+      border:1px solid rgba(30,99,255,.14);
+      background: rgba(30,99,255,.04);
+    }
+    .legend table{width:100%; border-collapse: collapse; font-weight:1000;}
+    .legend td{padding:8px 10px; border-bottom:1px solid rgba(30,99,255,.10); color: rgba(11,18,32,.92);}
+    .legend td:nth-child(1){width: 140px; color: rgba(11,18,32,.70)}
+    .legend tr:last-child td{border-bottom:none}
+
+    .review{margin-top: 14px; display:grid; grid-template-columns: 1fr 1fr; gap:12px;}
+    @media (max-width: 900px){.review{grid-template-columns: 1fr}}
+    .review .box{border-radius: 18px; border:1px solid rgba(30,99,255,.14); background: rgba(30,99,255,.03); padding: 12px;}
+    .review h3{margin:0 0 10px; font-weight:1000; text-transform: uppercase; letter-spacing:.6px; text-shadow: var(--glow); color:#0b1220;}
+    .review table{width:100%; border-collapse: collapse; font-weight:1000; font-size: 14px; color:#0b1220;}
+    .review th,.review td{border-bottom: 1px solid rgba(30,99,255,.10); padding: 8px 8px; text-align:left;}
+    .review th{color: rgba(11,18,32,.70); text-transform: uppercase; font-size: 12px; letter-spacing:.4px;}
+    .review tr:last-child td{border-bottom:none}
+    .hr{height:1px; background: rgba(30,99,255,.12); margin: 12px 0;}
+
+    /* เอฟเฟกต์วาบได้ แต่ "ไม่ใช่คลื่นตาลาย" */
+    .flash{
+      position:fixed; inset:0;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(30,99,255,.30), rgba(30,99,255,.0) 60%),
+        rgba(30,99,255,.10);
+      opacity:0;
+      pointer-events:none;
+      z-index:100;
+    }
+    .flash.go{animation: flash 420ms ease-out forwards;}
+    @keyframes flash{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
+
+    .center-emoji{
+      position:fixed; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      pointer-events:none;
+      z-index:90;
+      opacity:0;
+    }
+    .center-emoji.show{animation: pop 760ms ease-out forwards;}
+    @keyframes pop{
+      0%{opacity:0; transform: scale(.7)}
+      28%{opacity:1; transform: scale(1.10)}
+      70%{opacity:1; transform: scale(1.0)}
+      100%{opacity:0; transform: scale(1.0)}
+    }
+    .center-emoji .wrap{
+      display:flex; flex-direction:column; align-items:center; gap:10px;
+      padding: 18px 22px;
+      border-radius: 26px;
+      border:1px solid rgba(30,99,255,.18);
+      background: rgba(255,255,255,.86);
+      box-shadow: 0 24px 70px rgba(13,28,64,.20);
+    }
+    .center-emoji .emoji{font-size: clamp(52px, 9vw, 96px); text-shadow: 0 0 26px rgba(30,99,255,.22);}
+    .center-emoji .text{
+      font-weight:1000; letter-spacing:.6px; text-transform: uppercase;
+      color:#0b1220; text-shadow: var(--glow);
+      font-size: clamp(18px, 2.8vw, 28px);
+    }
+
+    .toast{
+      position:fixed;
+      bottom:18px; left:50%;
+      transform: translateX(-50%);
+      padding: 10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(30,99,255,.18);
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 18px 50px rgba(13,28,64,.14);
+      color: rgba(11,18,32,.92);
+      font-weight:1000;
+      letter-spacing:.2px;
+      opacity:0;
+      pointer-events:none;
+      z-index:120;
+    }
+    .toast.show{animation: toast 1.25s ease-out forwards;}
+    @keyframes toast{
+      0%{opacity:0; transform: translateX(-50%) translateY(10px)}
+      15%{opacity:1; transform: translateX(-50%) translateY(0px)}
+      85%{opacity:1}
+      100%{opacity:0; transform: translateX(-50%) translateY(6px)}
+    }
+
+    .cover-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top: 10px; align-items:center; justify-content:space-between;}
+    .toggles{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+    .toggle{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px; border-radius: 16px;
+      border:1px solid rgba(30,99,255,.14);
+      background: rgba(30,99,255,.04);
+      font-weight:1000;
+      color: rgba(11,18,32,.92);
+      user-select:none;
+    }
+    .toggle input{transform: scale(1.2)}
+    .bank-grid::-webkit-scrollbar, .modal::-webkit-scrollbar{width:10px;}
+    .bank-grid::-webkit-scrollbar-thumb, .modal::-webkit-scrollbar-thumb{
+      background: rgba(30,99,255,.20);
+      border-radius:999px;
+      border: 2px solid rgba(0,0,0,.0);
+      background-clip: padding-box;
+    }
+  </style>
+</head>
+<body>
+  <div class="energy-bg"></div>
+  <div class="energy-streak"></div>
+
+  <div class="flash" id="flash"></div>
+
+  <div class="center-emoji" id="emoji">
+    <div class="wrap">
+      <div class="emoji">😎</div>
+      <div class="text">เจ๋งมาก</div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- COVER -->
+  <div class="screen show" id="coverScreen">
+    <div class="modal">
+      <div class="badge" style="margin-bottom:10px;">
+        <span class="dot"></span><span>WHITE × BLUE ENERGY THEME</span>
+      </div>
+
+      <h1>ENERGY CORE<br/>MIRROR WAR</h1>
+      <div class="sub">
+        โหมดฝึกความแม่น “กระจกเว้า + กระจกนูน” แบบฉุกคิด ⚡<br/>
+        เล่น 2 ด่าน: <b>Build the Image</b> และ <b>Reverse Mode</b> รวมทั้งหมด 40 ข้อ
+      </div>
+
+      <div class="legend">
+        <div style="font-weight:1000; text-transform:uppercase; letter-spacing:.5px; text-shadow:var(--glow); margin-bottom:8px;">
+          Legend (สัญลักษณ์ตำแหน่ง)
+        </div>
+        <table>
+          <tr><td>&gt;2F</td><td>ไกลกว่า 2F</td></tr>
+          <tr><td>=2F</td><td>ที่ 2F</td></tr>
+          <tr><td>2F–F</td><td>ระหว่าง 2F กับ F</td></tr>
+          <tr><td>=F</td><td>ที่ F</td></tr>
+          <tr><td>&lt;F</td><td>ใกล้กว่าจุดโฟกัส</td></tr>
+          <tr><td>∞</td><td>ระยะอนันต์</td></tr>
+          <tr><td>ไม่กำหนด</td><td>ใช้กับกรณีภาพเสมือน</td></tr>
+          <tr><td>หน้ากระจก / หลังกระจก</td><td>ด้านของภาพ</td></tr>
+        </table>
+      </div>
+
+      <div class="review">
+        <div class="box">
+          <h3>Quick Review: กระจกเว้า</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>ตำแหน่งวัตถุ</th><th>ลักษณะ</th><th>ขนาด</th><th>ตำแหน่งภาพ(ระยะ)</th><th>ตำแหน่งภาพ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>∞</td><td>ภาพจริง</td><td>เล็กกว่าวัตถุ</td><td>=F</td><td>หน้ากระจก</td></tr>
+              <tr><td>&gt;2F</td><td>ภาพจริง</td><td>เล็กกว่าวัตถุ</td><td>2F–F</td><td>หน้ากระจก</td></tr>
+              <tr><td>=2F</td><td>ภาพจริง</td><td>เท่ากับวัตถุ</td><td>=2F</td><td>หน้ากระจก</td></tr>
+              <tr><td>2F–F</td><td>ภาพจริง</td><td>ใหญ่กว่าวัตถุ</td><td>&gt;2F</td><td>หน้ากระจก</td></tr>
+              <tr><td>=F</td><td>ภาพจริง</td><td>ใหญ่กว่าวัตถุ</td><td>∞</td><td>หน้ากระจก</td></tr>
+              <tr><td>&lt;F</td><td>ภาพเสมือน</td><td>ใหญ่กว่าวัตถุ</td><td>ไม่กำหนด</td><td>หลังกระจก</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="box">
+          <h3>Quick Review: กระจกนูน</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>ตำแหน่งวัตถุ</th><th>ลักษณะ</th><th>ขนาด</th><th>ตำแหน่งภาพ(ระยะ)</th><th>ตำแหน่งภาพ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>ทุกตำแหน่ง</td><td>ภาพเสมือน</td><td>เล็กกว่าวัตถุ</td><td>ไม่กำหนด</td><td>หลังกระจก</td></tr>
+            </tbody>
+          </table>
+          <div class="hr"></div>
+          <div class="sub" style="margin:0">* เกมบังคับเลือกครบทุกช่อง เพื่อ “ฉุกคิด” ทุกข้อ</div>
+        </div>
+      </div>
+
+      <div class="cover-actions">
+        <div class="toggles">
+          <label class="toggle"><input type="radio" name="mode" value="normal" checked /> ไม่จับเวลา</label>
+          <label class="toggle"><input type="radio" name="mode" value="timed" /> จับเวลา 15 วิ</label>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+          <button class="btn ghost" id="btnShowReview">ดูสรุป (Review)</button>
+          <button class="btn primary" id="btnStart">START ⚡</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEW SCREEN -->
+  <div class="screen" id="reviewScreen">
+    <div class="modal">
+      <div class="badge" style="margin-bottom:10px;">
+        <span class="dot"></span><span>ENERGY CORE SUMMARY</span>
+      </div>
+      <h1>REVIEW – MIRROR QUICK MAP</h1>
+      <div class="sub">
+        สรุปเร่งด่วน: “ตำแหน่งวัตถุ → ลักษณะภาพ/ขนาด/ตำแหน่งภาพ(ระยะ)/ตำแหน่งภาพ(หน้า-หลัง)”
+      </div>
+
+      <div class="review">
+        <div class="box">
+          <h3>กระจกเว้า (Concave)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>ตำแหน่งวัตถุ</th><th>ลักษณะ</th><th>ขนาด</th><th>ตำแหน่งภาพ(ระยะ)</th><th>ตำแหน่งภาพ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>∞</td><td>ภาพจริง</td><td>เล็กกว่าวัตถุ</td><td>=F</td><td>หน้ากระจก</td></tr>
+              <tr><td>&gt;2F</td><td>ภาพจริง</td><td>เล็กกว่าวัตถุ</td><td>2F–F</td><td>หน้ากระจก</td></tr>
+              <tr><td>=2F</td><td>ภาพจริง</td><td>เท่ากับวัตถุ</td><td>=2F</td><td>หน้ากระจก</td></tr>
+              <tr><td>2F–F</td><td>ภาพจริง</td><td>ใหญ่กว่าวัตถุ</td><td>&gt;2F</td><td>หน้ากระจก</td></tr>
+              <tr><td>=F</td><td>ภาพจริง</td><td>ใหญ่กว่าวัตถุ</td><td>∞</td><td>หน้ากระจก</td></tr>
+              <tr><td>&lt;F</td><td>ภาพเสมือน</td><td>ใหญ่กว่าวัตถุ</td><td>ไม่กำหนด</td><td>หลังกระจก</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="box">
+          <h3>กระจกนูน (Convex)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>ตำแหน่งวัตถุ</th><th>ลักษณะ</th><th>ขนาด</th><th>ตำแหน่งภาพ(ระยะ)</th><th>ตำแหน่งภาพ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>ทุกตำแหน่ง</td><td>ภาพเสมือน</td><td>เล็กกว่าวัตถุ</td><td>ไม่กำหนด</td><td>หลังกระจก</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="cover-actions" style="margin-top:14px;">
+        <div style="color:var(--muted); font-weight:1000;">พร้อมแล้วกลับสู่สนามประลอง ⚡</div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+          <button class="btn ghost" id="btnBackToCover">กลับหน้าแรก</button>
+          <button class="btn primary" id="btnBackToGame">กลับไปเล่น</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div class="app" id="gameApp" style="display:none;">
+    <div class="shell">
+      <div class="topbar">
+        <div class="brand">
+          <div class="title">ENERGY CORE – MIRROR WAR</div>
+          <div class="subtitle" id="stageLabel">STAGE 1 / 2 · BUILD THE IMAGE</div>
+        </div>
+
+        <div class="hud">
+          <div class="badge" id="modeBadge"><span class="dot"></span><span>MODE: NORMAL</span></div>
+          <div class="hudbox">
+            <div class="k">Score</div>
+            <div class="v" id="hudScore">0 / 40</div>
+          </div>
+          <div class="hudbox">
+            <div class="k">Correct · Wrong</div>
+            <div class="v" id="hudCW">0 · 0</div>
+          </div>
+          <div class="hudbox">
+            <div class="k">Streak</div>
+            <div class="v" id="hudStreak">0</div>
+          </div>
+          <button class="btn ghost" id="btnReview">Review</button>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="card">
+          <div class="card-inner">
+            <div class="section-title">
+              <h2 id="qTitle">QUESTION 1 / 20</h2>
+              <div class="small" id="qHint">แตะช่องคำตอบก่อน แล้วค่อยกดบล็อกคำตอบ</div>
+            </div>
+
+            <div class="qbox">
+              <div class="qline" id="qLine"></div>
+
+              <div id="timerWrap" style="display:none;">
+                <div class="timer"><div id="timerBar"></div></div>
+                <div class="timer-label">
+                  <span>TIME LEFT</span>
+                  <span id="timerText">15.0s</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="slots" id="slots"></div>
+
+            <!-- ✅ เปลี่ยนระบบ: ตรวจคำตอบ แล้วค่อยกด ถัดไป -->
+            <div class="actions">
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn danger" id="btnClear">ล้างคำตอบ</button>
+                <button class="btn ghost" id="btnHome">หน้าแรก</button>
+              </div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+                <button class="btn primary disabled" id="btnCheck">ตรวจคำตอบ ✓/✗</button>
+                <button class="btn primary disabled" id="btnNext">ถัดไป ➜</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-inner">
+            <div class="section-title">
+              <h2>ANSWER BLOCKS</h2>
+              <div class="small" id="bankModeLabel">เลือกบล็อกคำตอบให้ตรงช่อง</div>
+            </div>
+
+            <div class="bank">
+              <div class="bank-grid" id="bank"></div>
+              <div class="small" style="opacity:.95">
+                TIP: ถ้ายังไม่เลือก “ช่องคำตอบ” ระบบจะเด้งแจ้งเตือนให้เลือกช่องก่อน
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="resultScreen">
+    <div class="modal">
+      <div class="badge" style="margin-bottom:10px;">
+        <span class="dot"></span><span>MISSION REPORT</span>
+      </div>
+
+      <h1>ENERGY CORE RESULT</h1>
+      <div class="sub" id="resultSub"></div>
+
+      <div class="review" style="grid-template-columns: 1fr 1fr; gap:12px;">
+        <div class="box">
+          <h3>STAGE SCORE</h3>
+          <table>
+            <tbody>
+              <tr><td style="color:rgba(11,18,32,.7)">Stage 1 (20 ข้อ)</td><td id="resS1" style="text-align:right; font-weight:1000"></td></tr>
+              <tr><td style="color:rgba(11,18,32,.7)">Stage 2 (20 ข้อ)</td><td id="resS2" style="text-align:right; font-weight:1000"></td></tr>
+              <tr><td style="color:rgba(11,18,32,.7)">Correct</td><td id="resCorrect" style="text-align:right; font-weight:1000"></td></tr>
+              <tr><td style="color:rgba(11,18,32,.7)">Wrong</td><td id="resWrong" style="text-align:right; font-weight:1000"></td></tr>
+              <tr><td style="color:rgba(11,18,32,.7)">Total Score</td><td id="resTotal" style="text-align:right; font-weight:1000; text-shadow:var(--glowStrong)"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="box">
+          <h3>RANK</h3>
+          <div id="rankBox" style="font-weight:1000; font-size: clamp(18px, 2.6vw, 26px); text-shadow:var(--glowStrong); margin-bottom:10px;"></div>
+          <div class="sub" id="rankTip" style="margin:0"></div>
+          <div class="hr"></div>
+          <div class="sub" style="margin:0">กด Review เพื่อทบทวนเร่งด่วน แล้วกลับมาเล่นใหม่ได้ทันที ⚡</div>
+        </div>
+      </div>
+
+      <div class="cover-actions" style="margin-top:14px;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn ghost" id="btnResultReview">Review</button>
+          <button class="btn danger" id="btnRestart">เล่นใหม่ (Reset)</button>
+        </div>
+        <button class="btn primary" id="btnBackCover">กลับหน้าแรก ⚡</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== Sound ======
+    let audioCtx = null;
+    function beep(type="click"){
+      try{
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const t = audioCtx.currentTime;
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.connect(g); g.connect(audioCtx.destination);
+
+        let f1=520, f2=820, dur=0.08, vol=0.05;
+        if(type==="start"){ f1=240; f2=980; dur=0.16; vol=0.07; }
+        if(type==="good"){ f1=620; f2=1200; dur=0.12; vol=0.07; }
+        if(type==="bad"){ f1=180; f2=130; dur=0.14; vol=0.07; }
+
+        o.type = "sawtooth";
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(vol, t+0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+
+        o.frequency.setValueAtTime(f1, t);
+        o.frequency.exponentialRampToValueAtTime(f2, t+dur);
+
+        o.start(t);
+        o.stop(t+dur+0.02);
+      }catch(e){}
+    }
+
+    // ====== Data ======
+    const TOKENS = [
+      {id:"ภาพจริง"},{id:"ภาพเสมือน"},
+      {id:"เท่ากับวัตถุ"},{id:"เล็กกว่าวัตถุ"},{id:"ใหญ่กว่าวัตถุ"},
+      {id:">2F"},{id:"=2F"},{id:"2F–F"},{id:"=F"},{id:"<F"},{id:"∞"},
+      {id:"ไม่กำหนด"},
+      {id:"หน้ากระจก"},{id:"หลังกระจก"},
+    ];
+    const OBJ_POS = [">2F", "=2F", "2F–F", "=F", "<F", "∞"];
+
+    const CONCAVE = {
+      "∞":  {type:"ภาพจริง", size:"เล็กกว่าวัตถุ", imgPos:"=F",   side:"หน้ากระจก"},
+      ">2F":{type:"ภาพจริง", size:"เล็กกว่าวัตถุ", imgPos:"2F–F", side:"หน้ากระจก"},
+      "=2F":{type:"ภาพจริง", size:"เท่ากับวัตถุ",  imgPos:"=2F",  side:"หน้ากระจก"},
+      "2F–F":{type:"ภาพจริง", size:"ใหญ่กว่าวัตถุ", imgPos:">2F",  side:"หน้ากระจก"},
+      "=F": {type:"ภาพจริง", size:"ใหญ่กว่าวัตถุ", imgPos:"∞",    side:"หน้ากระจก"},
+      "<F": {type:"ภาพเสมือน", size:"ใหญ่กว่าวัตถุ", imgPos:"ไม่กำหนด", side:"หลังกระจก"},
+    };
+    const CONVEX_ALL = {type:"ภาพเสมือน", size:"เล็กกว่าวัตถุ", imgPos:"ไม่กำหนด", side:"หลังกระจก"};
+
+    const stage1Questions = [
+      {mirror:"กระจกเว้า", objPos:"∞"},
+      {mirror:"กระจกนูน", objPos:">2F"},
+      {mirror:"กระจกเว้า", objPos:">2F"},
+      {mirror:"กระจกเว้า", objPos:"=2F"},
+      {mirror:"กระจกนูน", objPos:"2F–F"},
+      {mirror:"กระจกเว้า", objPos:"2F–F"},
+      {mirror:"กระจกเว้า", objPos:"<F"},
+      {mirror:"กระจกนูน", objPos:"∞"},
+      {mirror:"กระจกเว้า", objPos:"=F"},
+      {mirror:"กระจกเว้า", objPos:">2F"},
+      {mirror:"กระจกนูน", objPos:"=2F"},
+      {mirror:"กระจกเว้า", objPos:"2F–F"},
+      {mirror:"กระจกเว้า", objPos:"∞"},
+      {mirror:"กระจกเว้า", objPos:"=2F"},
+      {mirror:"กระจกนูน", objPos:"=F"},
+      {mirror:"กระจกเว้า", objPos:"<F"},
+      {mirror:"กระจกนูน", objPos:"<F"},
+      {mirror:"กระจกเว้า", objPos:">2F"},
+      {mirror:"กระจกเว้า", objPos:"=F"},
+      {mirror:"กระจกนูน", objPos:">2F"},
+    ];
+
+    function stage1Answer(q){
+      if(q.mirror==="กระจกเว้า") return CONCAVE[q.objPos];
+      return CONVEX_ALL;
+    }
+
+    const stage2Questions = [
+      {mirror:"กระจกเว้า", img:{...CONCAVE[">2F"]}, answerObjPos:">2F"},
+      {mirror:"กระจกเว้า", img:{...CONCAVE["=2F"]}, answerObjPos:"=2F"},
+      {mirror:"กระจกเว้า", img:{...CONCAVE["2F–F"]}, answerObjPos:"2F–F"},
+      {mirror:"กระจกเว้า", img:{...CONCAVE["∞"]}, answerObjPos:"∞"},
+      {mirror:"กระจกเว้า", img:{...CONCAVE["=F"]}, answerObjPos:"=F"},
+      {mirror:"กระจกเว้า", img:{...CONCAVE["<F"]}, answerObjPos:"<F"},
+      {mirror:"กระจกนูน", img:{...CONVEX_ALL}, answerObjPos:"∞"},
+      {mirror:"กระจกนูน", img:{...CONVEX_ALL}, answerObjPos:">2F"},
+      {mirror:"กระจกนูน", img:{...CONVEX_ALL}, answerObjPos:"=2F"},
+      {mirror:"กระจกนูน", img:{...CONVEX_ALL}, answerObjPos:"2F–F"},
+      {mirror:"กระจกนูน", img:{...CONVEX_ALL}, answerObjPos:"=F"},
+      {mirror:"กระจกนูน", img:{...CONVEX_ALL}, answerObjPos:"<F"},
+      {mirror:"กระจกเว้า", img:{...CONCAVE["2F–F"]}, answerObjPos:"2F–F"},
+      {mirror:"กระจกเว้า", img:{...CONCAVE[">2F"]}, answerObjPos:">2F"},
+      {mirror:"กระจกเว้า", img:{...CONCAVE["=2F"]}, answerObjPos:"=2F"},
+      {mirror:"กระจกเว้า", img:{...CONCAVE["∞"]}, answerObjPos:"∞"},
+      {mirror:"กระจกเว้า", img:{...CONCAVE["<F"]}, answerObjPos:"<F"},
+      {mirror:"กระจกนูน", img:{...CONVEX_ALL}, answerObjPos:">2F"},
+      {mirror:"กระจกนูน", img:{...CONVEX_ALL}, answerObjPos:"2F–F"},
+      {mirror:"กระจกนูน", img:{...CONVEX_ALL}, answerObjPos:"=2F"},
+    ];
+
+    // ====== State ======
+    const state = {
+      mode: "normal",
+      stage: 1,
+      idx: 0,
+      score: 0,
+      correct: 0,
+      wrong: 0,
+      streak: 0,
+      s1Correct: 0,
+      s2Correct: 0,
+      activeSlotKey: null,
+      answers: {},
+      slotStatus: {},
+      lockedAfterCheck: false,
+      checkedThisQ: false,   // ✅ สำคัญ: ตรวจแล้วหรือยัง
+      timer: { totalMs:15000, leftMs:15000, raf:null, lastTs:null }
+    };
+
+    // ====== DOM ======
+    const coverScreen = document.getElementById("coverScreen");
+    const reviewScreen = document.getElementById("reviewScreen");
+    const resultScreen = document.getElementById("resultScreen");
+    const gameApp = document.getElementById("gameApp");
+
+    const btnStart = document.getElementById("btnStart");
+    const btnShowReview = document.getElementById("btnShowReview");
+    const btnBackToCover = document.getElementById("btnBackToCover");
+    const btnBackToGame = document.getElementById("btnBackToGame");
+
+    const flash = document.getElementById("flash");
+    const emoji = document.getElementById("emoji");
+    const toast = document.getElementById("toast");
+
+    const stageLabel = document.getElementById("stageLabel");
+    const modeBadge = document.getElementById("modeBadge");
+    const hudScore = document.getElementById("hudScore");
+    const hudCW = document.getElementById("hudCW");
+    const hudStreak = document.getElementById("hudStreak");
+    const btnReview = document.getElementById("btnReview");
+
+    const qTitle = document.getElementById("qTitle");
+    const qLine = document.getElementById("qLine");
+    const qHint = document.getElementById("qHint");
+
+    const timerWrap = document.getElementById("timerWrap");
+    const timerBar = document.getElementById("timerBar");
+    const timerText = document.getElementById("timerText");
+
+    const slotsEl = document.getElementById("slots");
+    const bankEl = document.getElementById("bank");
+    const bankModeLabel = document.getElementById("bankModeLabel");
+
+    const btnClear = document.getElementById("btnClear");
+    const btnHome = document.getElementById("btnHome");
+    const btnCheck = document.getElementById("btnCheck");
+    const btnNext = document.getElementById("btnNext");
+
+    const resultSub = document.getElementById("resultSub");
+    const resS1 = document.getElementById("resS1");
+    const resS2 = document.getElementById("resS2");
+    const resCorrect = document.getElementById("resCorrect");
+    const resWrong = document.getElementById("resWrong");
+    const resTotal = document.getElementById("resTotal");
+    const rankBox = document.getElementById("rankBox");
+    const rankTip = document.getElementById("rankTip");
+    const btnResultReview = document.getElementById("btnResultReview");
+    const btnRestart = document.getElementById("btnRestart");
+    const btnBackCover = document.getElementById("btnBackCover");
+
+    // ====== Helpers ======
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.remove("show");
+      void toast.offsetWidth;
+      toast.classList.add("show");
+    }
+    function doFlash(){
+      flash.classList.remove("go");
+      void flash.offsetWidth;
+      flash.classList.add("go");
+    }
+    function popEmoji(){
+      emoji.classList.remove("show");
+      void emoji.offsetWidth;
+      emoji.classList.add("show");
+    }
+    function setModeFromCover(){
+      const checked = document.querySelector('input[name="mode"]:checked');
+      state.mode = checked ? checked.value : "normal";
+    }
+    function updateHUD(){
+      hudScore.textContent = `${state.score} / 40`;
+      hudCW.textContent = `${state.correct} · ${state.wrong}`;
+      hudStreak.textContent = `${state.streak}`;
+      modeBadge.innerHTML = `<span class="dot"></span><span>MODE: ${state.mode==="timed" ? "15s SPEED" : "NORMAL"}</span>`;
+    }
+    function getCurrentQuestion(){
+      return (state.stage===1) ? stage1Questions[state.idx] : stage2Questions[state.idx];
+    }
+    function requiredSlots(){
+      if(state.stage===1){
+        return [
+          {key:"type", label:"ลักษณะภาพ"},
+          {key:"size", label:"ขนาด"},
+          {key:"imgPos", label:"ตำแหน่งภาพ (ระยะ)"},
+          {key:"imgSide", label:"ตำแหน่งภาพ"},
+        ];
+      }
+      return [{key:"objPos", label:"ตำแหน่งวัตถุ"}];
+    }
+
+    function setButtons(){
+      // ปุ่มตรวจ: ต้องตอบครบก่อน + ยังไม่ตรวจ
+      const req = requiredSlots();
+      const filled = req.every(s => typeof state.answers[s.key] === "string" && state.answers[s.key].length>0);
+      if(filled && !state.checkedThisQ) btnCheck.classList.remove("disabled");
+      else btnCheck.classList.add("disabled");
+
+      // ปุ่มถัดไป: ใช้ได้เฉพาะหลังตรวจแล้ว หรือหมดเวลาแล้ว (lockedAfterCheck true)
+      if(state.checkedThisQ) btnNext.classList.remove("disabled");
+      else btnNext.classList.add("disabled");
+    }
+
+    function clearAnswers(){
+      state.answers = {};
+      state.slotStatus = {};
+      state.activeSlotKey = null;
+      state.lockedAfterCheck = false;
+      state.checkedThisQ = false;
+      renderSlots();
+      renderBank();
+      setButtons();
+    }
+
+    function renderSlots(){
+      const req = requiredSlots();
+      slotsEl.innerHTML = "";
+
+      req.forEach(s=>{
+        const div = document.createElement("div");
+        const status = state.slotStatus[s.key];
+        div.className = "slot" +
+          (state.activeSlotKey===s.key ? " active" : "") +
+          (status==="correct" ? " correct" : "") +
+          (status==="wrong" ? " wrong" : "");
+        div.dataset.key = s.key;
+
+        const label = document.createElement("div");
+        label.className = "label";
+        label.textContent = s.label;
+
+        const val = document.createElement("div");
+        const v = state.answers[s.key];
+        val.className = "value" + (!v ? " empty" : "");
+        val.textContent = v ? v : "แตะเพื่อเลือกช่อง";
+
+        const mark = document.createElement("div");
+        mark.className = "mark";
+        if(status==="correct") mark.textContent = "✓";
+        else if(status==="wrong") mark.textContent = "✗";
+        else mark.textContent = "•";
+
+        div.appendChild(label);
+        div.appendChild(val);
+        div.appendChild(mark);
+
+        div.addEventListener("click", ()=>{
+          if(state.lockedAfterCheck) return;
+          beep("click");
+          state.activeSlotKey = s.key;
+          renderSlots();
+          renderBank();
+        });
+
+        slotsEl.appendChild(div);
+      });
+    }
+
+    function tokenAllowedForSlot(tokenId, slotKey){
+      if(state.stage===1){
+        if(slotKey==="type") return tokenId==="ภาพจริง" || tokenId==="ภาพเสมือน";
+        if(slotKey==="size") return tokenId==="เท่ากับวัตถุ" || tokenId==="เล็กกว่าวัตถุ" || tokenId==="ใหญ่กว่าวัตถุ";
+        if(slotKey==="imgPos") return [">2F","=2F","2F–F","=F","<F","∞","ไม่กำหนด"].includes(tokenId);
+        if(slotKey==="imgSide") return tokenId==="หน้ากระจก" || tokenId==="หลังกระจก";
+        return false;
+      }
+      if(slotKey==="objPos") return OBJ_POS.includes(tokenId);
+      return false;
+    }
+
+    function renderBank(){
+      bankEl.innerHTML = "";
+      const req = requiredSlots();
+      const active = state.activeSlotKey;
+
+      TOKENS.forEach(t=>{
+        const b = document.createElement("div");
+        b.className = "token";
+        b.textContent = t.id;
+
+        let disabled = false;
+        if(state.stage===2 && !OBJ_POS.includes(t.id)) disabled = true;
+        if(state.lockedAfterCheck) disabled = true;
+        if(active && !tokenAllowedForSlot(t.id, active)) disabled = true;
+
+        if(disabled) b.classList.add("disabled");
+
+        b.addEventListener("click", ()=>{
+          if(state.lockedAfterCheck) return;
+          if(!state.activeSlotKey){
+            showToast("แตะเลือกช่องคำตอบก่อนนะ ⚡");
+            beep("bad");
+            return;
+          }
+          if(!tokenAllowedForSlot(t.id, state.activeSlotKey)){
+            showToast("บล็อกนี้ไม่เข้าช่องนี้ ⚠️");
+            beep("bad");
+            return;
+          }
+          beep("click");
+          state.answers[state.activeSlotKey] = t.id;
+
+          // auto move to next empty slot
+          const order = req.map(x=>x.key);
+          const i = order.indexOf(state.activeSlotKey);
+          let nextKey = null;
+          for(let k=i+1;k<order.length;k++){
+            if(!state.answers[order[k]]) { nextKey = order[k]; break; }
+          }
+          if(!nextKey) nextKey = order.find(k=>!state.answers[k]) || null;
+          state.activeSlotKey = nextKey;
+
+          renderSlots();
+          renderBank();
+          setButtons();
+        });
+
+        bankEl.appendChild(b);
+      });
+
+      bankModeLabel.textContent =
+        state.stage===1
+          ? "เลือกบล็อกคำตอบให้ตรงช่อง (ครบ 4 ช่องทุกข้อ) – ตรวจแล้วจะเห็น ✓/✗ ทุกช่อง"
+          : "Reverse Mode: เลือก “ตำแหน่งวัตถุ” (ครบ 1 ช่องทุกข้อ) – ตรวจแล้วจะเห็น ✓/✗";
+    }
+
+    function renderQuestion(){
+      const q = getCurrentQuestion();
+
+      if(state.stage===1){
+        stageLabel.textContent = "STAGE 1 / 2 · BUILD THE IMAGE";
+        qTitle.textContent = `QUESTION ${state.idx+1} / 20`;
+        qHint.textContent = "แตะช่องคำตอบก่อน แล้วค่อยกดบล็อกคำตอบ (ครบ 4 ช่อง) จากนั้นกด “ตรวจคำตอบ”";
+        qLine.innerHTML = `
+          <span class="pill"><strong>${q.mirror}</strong></span>
+          <span class="small" style="font-size:14px; font-weight:1000; color:rgba(11,18,32,.92)">ตำแหน่งวัตถุ:</span>
+          <span class="pill"><strong>${q.objPos}</strong></span>
+        `;
+      }else{
+        stageLabel.textContent = "STAGE 2 / 2 · REVERSE MODE";
+        qTitle.textContent = `QUESTION ${state.idx+1} / 20`;
+        qHint.textContent = "อ่านคุณสมบัติภาพ แล้วเลือก “ตำแหน่งวัตถุ” จากนั้นกด “ตรวจคำตอบ”";
+        qLine.innerHTML = `
+          <span class="pill"><strong>${q.mirror}</strong></span>
+          <span class="small" style="font-size:14px; font-weight:1000; color:rgba(11,18,32,.92)">ลักษณะภาพ:</span>
+          <span class="pill"><strong>${q.img.type}</strong></span>
+          <span class="small" style="font-size:14px; font-weight:1000; color:rgba(11,18,32,.92)">ขนาด:</span>
+          <span class="pill"><strong>${q.img.size}</strong></span>
+          <span class="small" style="font-size:14px; font-weight:1000; color:rgba(11,18,32,.92)">ตำแหน่งภาพ(ระยะ):</span>
+          <span class="pill"><strong>${q.img.imgPos}</strong></span>
+          <span class="small" style="font-size:14px; font-weight:1000; color:rgba(11,18,32,.92)">ตำแหน่งภาพ:</span>
+          <span class="pill"><strong>${q.img.side}</strong></span>
+        `;
+      }
+
+      if(state.mode==="timed"){
+        timerWrap.style.display = "";
+        resetTimer();
+        startTimer();
+      }else{
+        timerWrap.style.display = "none";
+        stopTimer();
+      }
+
+      clearAnswers();
+      renderSlots();
+      renderBank();
+      setButtons();
+    }
+
+    function getCorrectMap(){
+      const q = getCurrentQuestion();
+      if(state.stage===1){
+        const a = stage1Answer(q);
+        return { type:a.type, size:a.size, imgPos:a.imgPos, imgSide:a.side };
+      }else{
+        return { objPos: q.answerObjPos };
+      }
+    }
+
+    function evaluateSlots(){
+      const correct = getCorrectMap();
+      const req = requiredSlots();
+      let allOk = true;
+
+      req.forEach(s=>{
+        const chosen = state.answers[s.key];
+        const ok = chosen === correct[s.key];
+        state.slotStatus[s.key] = ok ? "correct" : "wrong";
+        if(!ok) allOk = false;
+      });
+
+      state.lockedAfterCheck = true;
+      state.checkedThisQ = true;
+
+      renderSlots();
+      renderBank();
+      setButtons();
+      return allOk;
+    }
+
+    function applyCorrect(){
+      state.score += 1;
+      state.correct += 1;
+      state.streak += 1;
+      if(state.stage===1) state.s1Correct += 1;
+      else state.s2Correct += 1;
+
+      updateHUD();
+      doFlash();
+      popEmoji();
+      beep("good");
+      showToast("✅ ถูกทั้งข้อ! 😎 เจ๋งมาก");
+    }
+
+    function applyWrong(msg){
+      state.wrong += 1;
+      state.streak = 0;
+      updateHUD();
+      beep("bad");
+      showToast(`❌ ${msg}`);
+    }
+
+    function goNext(){
+      // ไปต่อเมื่อกดปุ่มถัดไปเท่านั้น
+      if(state.stage===1){
+        state.idx += 1;
+        if(state.idx >= stage1Questions.length){
+          state.stage = 2;
+          state.idx = 0;
+          doFlash();
+          beep("start");
+          showToast("⚡ เข้าสู่ STAGE 2: REVERSE MODE");
+        }
+        renderQuestion();
+        updateHUD();
+      }else{
+        state.idx += 1;
+        if(state.idx >= stage2Questions.length){
+          endGame();
+          return;
+        }
+        renderQuestion();
+      }
+    }
+
+    // ====== Timer ======
+    function resetTimer(){
+      state.timer.leftMs = state.timer.totalMs;
+      state.timer.lastTs = null;
+      timerBar.style.transform = "scaleX(1)";
+      timerText.textContent = "15.0s";
+    }
+    function stopTimer(){
+      if(state.timer.raf){ cancelAnimationFrame(state.timer.raf); state.timer.raf=null; }
+      state.timer.lastTs = null;
+    }
+    function startTimer(){
+      stopTimer();
+      const total = state.timer.totalMs;
+
+      function tick(ts){
+        if(!state.timer.lastTs) state.timer.lastTs = ts;
+        const dt = ts - state.timer.lastTs;
+        state.timer.lastTs = ts;
+        state.timer.leftMs -= dt;
+
+        const left = Math.max(0, state.timer.leftMs);
+        const p = left / total;
+        timerBar.style.transform = `scaleX(${p})`;
+        timerText.textContent = (left/1000).toFixed(1) + "s";
+
+        if(left<=0){
+          stopTimer();
+
+          // ✅ หมดเวลา: “ไม่เด้งไปข้อถัดไป” แต่ล็อกคำตอบ + เปิดปุ่มถัดไปให้กดเอง
+          state.lockedAfterCheck = true;
+          state.checkedThisQ = true;
+          renderSlots();
+          renderBank();
+          setButtons();
+          applyWrong("หมดเวลา! กด “ถัดไป” เพื่อไปต่อ");
+          doFlash();
+          return;
+        }
+        state.timer.raf = requestAnimationFrame(tick);
+      }
+      state.timer.raf = requestAnimationFrame(tick);
+    }
+
+    // ====== End game ======
+    function endGame(){
+      stopTimer();
+      gameApp.style.display = "none";
+      resultScreen.classList.add("show");
+
+      resultSub.innerHTML = `คุณทำได้ <b>${state.correct}/40</b> (ผิด ${state.wrong}) · โหมด: <b>${state.mode==="timed"?"15s Speed":"Normal"}</b>`;
+      document.getElementById("resS1").textContent = `${state.s1Correct} / 20`;
+      document.getElementById("resS2").textContent = `${state.s2Correct} / 20`;
+      document.getElementById("resCorrect").textContent = `${state.correct}`;
+      document.getElementById("resWrong").textContent = `${state.wrong}`;
+      document.getElementById("resTotal").textContent = `${state.score} / 40`;
+
+      const total = state.score;
+      let rank = "ALIGNMENT READY";
+      let tip = "ทบทวน Review แล้วเล่นใหม่ จะเริ่มเห็นแพทเทิร์นชัดขึ้น ⚡";
+      if(total===40){ rank = "MASTER OF REFLECTION"; tip = "สมบูรณ์แบบ! พร้อมไปเกมเลนส์ได้แล้ว 😎"; }
+      else if(total>=35){ rank = "FOCUS ELITE"; tip = "ใกล้มาก! อีกนิดจะเต็มแล้ว!"; }
+      else if(total>=25){ rank = "ENERGY STABLE"; tip = "ดีมาก! เน้น <F และ =F ให้แม่นขึ้น"; }
+      else{ rank = "NEED MORE RAYS"; tip = "ไม่เป็นไร! อ่าน Review 30 วิแล้วกลับมาลุยใหม่ 💪"; }
+
+      rankBox.textContent = rank;
+      rankTip.textContent = tip;
+
+      doFlash();
+    }
+
+    function resetAll(){
+      stopTimer();
+      state.stage = 1;
+      state.idx = 0;
+      state.score = 0;
+      state.correct = 0;
+      state.wrong = 0;
+      state.streak = 0;
+      state.s1Correct = 0;
+      state.s2Correct = 0;
+      state.activeSlotKey = null;
+      state.answers = {};
+      state.slotStatus = {};
+      state.lockedAfterCheck = false;
+      state.checkedThisQ = false;
+      updateHUD();
+    }
+
+    // ====== Events ======
+    btnShowReview.addEventListener("click", ()=>{
+      beep("click");
+      coverScreen.classList.remove("show");
+      reviewScreen.classList.add("show");
+    });
+    btnBackToCover.addEventListener("click", ()=>{
+      beep("click");
+      reviewScreen.classList.remove("show");
+      coverScreen.classList.add("show");
+    });
+    btnBackToGame.addEventListener("click", ()=>{
+      beep("click");
+      reviewScreen.classList.remove("show");
+      if(gameApp.style.display==="none") coverScreen.classList.add("show");
+    });
+    btnReview.addEventListener("click", ()=>{ beep("click"); reviewScreen.classList.add("show"); });
+
+    btnHome.addEventListener("click", ()=>{
+      beep("click");
+      stopTimer();
+      gameApp.style.display = "none";
+      coverScreen.classList.add("show");
+    });
+
+    btnStart.addEventListener("click", ()=>{
+      setModeFromCover();
+      beep("start");
+      doFlash();
+      setTimeout(()=>{
+        coverScreen.classList.remove("show");
+        resultScreen.classList.remove("show");
+        reviewScreen.classList.remove("show");
+        gameApp.style.display = "";
+        resetAll();
+        updateHUD();
+        renderQuestion();
+      }, 220);
+    });
+
+    btnClear.addEventListener("click", ()=>{
+      if(state.lockedAfterCheck) return;
+      beep("click");
+      clearAnswers();
+      showToast("ล้างคำตอบแล้ว");
+    });
+
+    // ✅ ตรวจคำตอบ (ไม่ไปต่อ)
+    btnCheck.addEventListener("click", ()=>{
+      if(btnCheck.classList.contains("disabled")){
+        beep("bad");
+        showToast("ยังตอบไม่ครบทุกช่อง ⚡");
+        return;
+      }
+      if(state.mode==="timed") stopTimer();
+
+      const allOk = evaluateSlots();
+      if(allOk) applyCorrect();
+      else applyWrong("บางช่องยังไม่ถูก (ดู ✓/✗ ที่แต่ละช่อง)");
+      doFlash();
+      // ไม่เด้งไปข้อถัดไป — รอผู้เล่นกด “ถัดไป”
+      showToast("กด “ถัดไป” เพื่อไปข้อถัดไป ➜");
+    });
+
+    // ✅ ถัดไป (เฉพาะหลังตรวจแล้ว/หมดเวลา)
+    btnNext.addEventListener("click", ()=>{
+      if(btnNext.classList.contains("disabled")){
+        beep("bad");
+        showToast("ต้องกด “ตรวจคำตอบ” ก่อนนะ");
+        return;
+      }
+      beep("click");
+      goNext();
+    });
+
+    btnResultReview.addEventListener("click", ()=>{
+      beep("click");
+      resultScreen.classList.remove("show");
+      reviewScreen.classList.add("show");
+    });
+
+    btnRestart.addEventListener("click", ()=>{
+      beep("start");
+      doFlash();
+      resultScreen.classList.remove("show");
+      gameApp.style.display = "";
+      resetAll();
+      updateHUD();
+      renderQuestion();
+    });
+
+    btnBackCover.addEventListener("click", ()=>{
+      beep("click");
+      resultScreen.classList.remove("show");
+      coverScreen.classList.add("show");
+    });
+
+    updateHUD();
+    document.addEventListener("dragstart", (e)=>e.preventDefault());
+  </script>
+</body>
+</html>
